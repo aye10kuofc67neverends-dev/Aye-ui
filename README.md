@@ -25,8 +25,11 @@ Put `AyeUI.lua` into: ReplicatedStorage
 local UI = require(game.ReplicatedStorage.AyeUI)
 OR
 
-Create
-UIlocal Window = UI:CreateWindow({
+HTTP Load
+local UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/USER/AyeUI/main/src/AyeUI.lua"))()
+
+Create UI
+local Window = UI:CreateWindow({
 Title = "Ayeui"
 })
 
@@ -47,6 +50,3 @@ Slider
 Main:Slider("Speed", 16, 100, function(value)
 	print(value)
 end)
-
-HTTP Load
-local UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/USER/AyeUI/main/src/AyeUI.lua"))()
