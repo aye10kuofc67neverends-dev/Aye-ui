@@ -1,11 +1,13 @@
 local AyeUI = {}
 
+--// Services
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 
 local LP = Players.LocalPlayer
 local PlayerGui = LP:WaitForChild("PlayerGui")
 
+--// Helpers
 local function Corner(obj, r)
 	local c = Instance.new("UICorner")
 	c.CornerRadius = UDim.new(0, r or 6)
@@ -21,6 +23,7 @@ local function Stroke(obj)
 	return s
 end
 
+--// Window
 function AyeUI:CreateWindow(config)
 	config = config or {}
 
@@ -53,6 +56,7 @@ function AyeUI:CreateWindow(config)
 	Title.TextSize = 16
 	Title.Parent = Top
 
+	--// Tabs UI
 	local TabHolder = Instance.new("Frame")
 	TabHolder.Size = UDim2.new(0,120,1,-35)
 	TabHolder.Position = UDim2.new(0,0,0,35)
@@ -68,8 +72,10 @@ function AyeUI:CreateWindow(config)
 	local Layout = Instance.new("UIListLayout")
 	Layout.Parent = TabHolder
 
+	--// Minimize system
 	local minimized = false
 	local savedSize = Main.Size
+	local FloatingBtn
 
 	local MinBtn = Instance.new("TextButton")
 	MinBtn.Size = UDim2.new(0,30,0,30)
@@ -86,23 +92,54 @@ function AyeUI:CreateWindow(config)
 	Corner(CloseBtn, 6)
 
 	CloseBtn.MouseButton1Click:Connect(function()
+		if FloatingBtn then FloatingBtn:Destroy() end
 		Gui:Destroy()
 	end)
 
 	MinBtn.MouseButton1Click:Connect(function()
 		minimized = not minimized
+
 		if minimized then
 			savedSize = Main.Size
 			Main.Size = UDim2.new(0,460,0,35)
 			TabHolder.Visible = false
 			Pages.Visible = false
+
+			-- 💀 floating icon
+			FloatingBtn = Instance.new("TextButton")
+			FloatingBtn.Size = UDim2.new(0,45,0,45)
+			FloatingBtn.Position = UDim2.new(0.9,0,0.5,0)
+			FloatingBtn.Text = "💀"
+			FloatingBtn.TextSize = 20
+			FloatingBtn.BackgroundColor3 = Color3.fromRGB(25,25,25)
+			FloatingBtn.TextColor3 = Color3.new(1,1,1)
+			FloatingBtn.Parent = Gui
+			Corner(FloatingBtn, 10)
+			Stroke(FloatingBtn)
+
+			FloatingBtn.MouseButton1Click:Connect(function()
+				minimized = false
+				Main.Size = savedSize
+				TabHolder.Visible = true
+				Pages.Visible = true
+
+				FloatingBtn:Destroy()
+				FloatingBtn = nil
+			end)
+
 		else
 			Main.Size = savedSize
 			TabHolder.Visible = true
 			Pages.Visible = true
+
+			if FloatingBtn then
+				FloatingBtn:Destroy()
+				FloatingBtn = nil
+			end
 		end
 	end)
 
+	--// Drag system
 	local dragging, dragStart, startPos
 
 	Top.InputBegan:Connect(function(i)
@@ -131,6 +168,7 @@ function AyeUI:CreateWindow(config)
 		end
 	end)
 
+	--// Tabs
 	function AyeUI:CreateTab(name)
 		local TabBtn = Instance.new("TextButton")
 		TabBtn.Size = UDim2.new(1,0,0,35)
@@ -195,8 +233,8 @@ function AyeUI:CreateWindow(config)
 			local label = Instance.new("TextLabel")
 			label.Size = UDim2.new(1,0,1,0)
 			label.BackgroundTransparency = 1
-			label.Text = text
 			label.TextColor3 = Color3.new(1,1,1)
+			label.Text = text
 			label.Parent = frame
 
 			local bar = Instance.new("Frame")
